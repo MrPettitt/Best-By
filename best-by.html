@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best By</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=DM+Mono:wght@400;500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #EDE6D6;
+    --card: #FBF8F1;
+    --ink: #26231D;
+    --ink-soft: #6B6353;
+    --line: #C7BB9C;
+    --fresh: #3F6B4A;
+    --fresh-bg: #E4ECE3;
+    --soon: #C97F1E;
+    --soon-bg: #F5E7D0;
+    --expired: #A63D2B;
+    --expired-bg: #F2DED8;
+    --stamp-purple: #5B4B8A;
+    --radius: 3px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(38,35,29,0.045) 1px, transparent 0);
+    background-size: 18px 18px;
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+    padding: 28px 16px 80px;
+  }
+  .wrap{max-width: 760px; margin: 0 auto;}
+
+  /* ---- Header ---- */
+  header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:16px;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom:14px;
+    margin-bottom: 22px;
+    flex-wrap:wrap;
+  }
+  h1{
+    font-family:'Special Elite', monospace;
+    font-size: 2.1rem;
+    margin:0;
+    letter-spacing: 0.5px;
+    line-height:1;
+  }
+  .tagline{
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    margin-top:6px;
+    font-style:italic;
+  }
+  .summary{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .summary .pill{
+    font-family:'DM Mono', monospace;
+    font-size:0.72rem;
+    padding:4px 9px;
+    border-radius: 20px;
+    border:1px solid var(--line);
+    background:var(--card);
+    white-space:nowrap;
+  }
+  .summary .pill b{font-size:0.85rem;}
+  .pill.expired{border-color:var(--expired); color:var(--expired);}
+  .pill.soon{border-color:var(--soon); color:var(--soon);}
+  .pill.fresh{border-color:var(--fresh); color:var(--fresh);}
+
+  /* ---- Add form ---- */
+  .add-panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding:16px;
+    margin-bottom:26px;
+    box-shadow: 0 1px 0 rgba(38,35,29,0.06);
+  }
+  .add-panel h2{
+    font-family:'DM Mono', monospace;
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:var(--ink-soft);
+    margin:0 0 12px;
+  }
+  .add-grid{
+    display:grid;
+    grid-template-columns: 2fr 1.2fr 0.9fr 1.2fr auto;
+    gap:10px;
+    align-items:end;
+  }
+  @media (max-width: 640px){
+    .add-grid{grid-template-columns: 1fr 1fr;}
+    .add-grid .full{grid-column: 1/-1;}
+  }
+  label{
+    display:block;
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.8px;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+  input, select{
+    width:100%;
+    font-family:'Work Sans', sans-serif;
+    font-size:0.9rem;
+    padding:8px 9px;
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    background:#fff;
+    color:var(--ink);
+  }
+  input:focus, select:focus, button:focus-visible{
+    outline: 2px solid var(--stamp-purple);
+    outline-offset: 1px;
+  }
+  button{
+    font-family:'Work Sans', sans-serif;
+    cursor:pointer;
+    border:none;
+  }
+  .btn-add{
+    background:var(--ink);
+    color:var(--paper);
+    font-weight:600;
+    font-size:0.88rem;
+    padding:9px 18px;
+    border-radius: var(--radius);
+    white-space:nowrap;
+  }
+  .btn-add:hover{background:#3a352a;}
+
+  /* ---- Filter bar ---- */
+  .filter-bar{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom: 22px;
+  }
+  .chip{
+    font-family:'DM Mono', monospace;
+    font-size:0.72rem;
+    padding:5px 12px;
+    border-radius:20px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink-soft);
+  }
+  .chip.active{
+    background:var(--ink);
+    color:var(--paper);
+    border-color:var(--ink);
+  }
+
+  /* ---- Shelves ---- */
+  .shelf{margin-bottom: 30px;}
+  .shelf-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .shelf-title{
+    font-family:'DM Mono', monospace;
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+  }
+  .shelf-count{
+    font-family:'DM Mono', monospace;
+    font-size:0.7rem;
+    color:var(--ink-soft);
+  }
+  .shelf-line{
+    flex:1;
+    height:0;
+    border-bottom: 3px double var(--line);
+  }
+  .shelf.expired .shelf-title{color:var(--expired);}
+  .shelf.soon .shelf-title{color:var(--soon);}
+  .shelf.week .shelf-title{color:#7C6A2E;}
+  .shelf.fresh .shelf-title{color:var(--fresh);}
+
+  .items{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left: 5px solid var(--line);
+    border-radius: var(--radius);
+    padding:10px 12px;
+  }
+  .item.expired{border-left-color:var(--expired);}
+  .item.soon{border-left-color:var(--soon);}
+  .item.week{border-left-color:#B69B2E;}
+  .item.fresh{border-left-color:var(--fresh);}
+
+  .stamp{
+    font-family:'DM Mono', monospace;
+    font-size:0.72rem;
+    font-weight:500;
+    border:1.5px solid currentColor;
+    border-radius: 50%;
+    width:52px;
+    height:52px;
+    min-width:52px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    line-height:1.05;
+    transform: rotate(-6deg);
+  }
+  .item.expired .stamp{color:var(--expired);}
+  .item.soon .stamp{color:var(--soon);}
+  .item.week .stamp{color:#8C7526;}
+  .item.fresh .stamp{color:var(--fresh);}
+
+  .item-info{flex:1; min-width:0;}
+  .item-name{
+    font-weight:600;
+    font-size:0.96rem;
+    margin:0 0 2px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .item-meta{
+    font-size:0.76rem;
+    color:var(--ink-soft);
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .tag{
+    font-family:'DM Mono', monospace;
+    font-size:0.68rem;
+    padding:1px 7px;
+    border-radius:10px;
+    background:var(--paper);
+    border:1px solid var(--line);
+  }
+
+  .item-actions{
+    display:flex;
+    gap:6px;
+  }
+  .icon-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    width:32px;
+    height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink-soft);
+    font-size:0.95rem;
+  }
+  .icon-btn:hover{background:var(--paper); color:var(--ink);}
+  .icon-btn.used:hover{color:var(--fresh); border-color:var(--fresh);}
+  .icon-btn.del:hover{color:var(--expired); border-color:var(--expired);}
+
+  .empty{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--ink-soft);
+  }
+  .empty .big{
+    font-family:'Special Elite', monospace;
+    font-size:1.3rem;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .shelf-empty{
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    font-style:italic;
+    padding: 6px 2px 2px;
+  }
+  .toast{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform: translateX(-50%);
+    background:var(--ink);
+    color:var(--paper);
+    padding:9px 16px;
+    border-radius: 20px;
+    font-family:'DM Mono', monospace;
+    font-size:0.78rem;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 0.25s ease;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>Best By</h1>
+      <div class="tagline">what's in the pantry, and how long you've got</div>
+    </div>
+    <div class="summary" id="summary"></div>
+  </header>
+
+  <div class="add-panel">
+    <h2>Add an item</h2>
+    <div class="add-grid">
+      <div>
+        <label for="f-name">Item</label>
+        <input id="f-name" type="text" placeholder="e.g. Greek yoghurt" autocomplete="off">
+      </div>
+      <div>
+        <label for="f-category">Category</label>
+        <select id="f-category">
+          <option>Produce</option>
+          <option>Dairy & Eggs</option>
+          <option>Meat & Seafood</option>
+          <option>Bakery</option>
+          <option>Pantry</option>
+          <option>Frozen</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="f-qty">Qty</label>
+        <input id="f-qty" type="text" placeholder="1" autocomplete="off">
+      </div>
+      <div>
+        <label for="f-expiry">Expires</label>
+        <input id="f-expiry" type="date">
+      </div>
+      <button class="btn-add" id="add-btn">Add to shelf</button>
+    </div>
+  </div>
+
+  <div class="filter-bar" id="filter-bar"></div>
+
+  <div id="shelves"></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'grocery-items-v1';
+let items = [];
+let activeCategory = 'All';
+const CATEGORIES = ['All','Produce','Dairy & Eggs','Meat & Seafood','Bakery','Pantry','Frozen','Other'];
+
+function todayMidnight(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function daysLeft(expiryStr){
+  const expiry = new Date(expiryStr + 'T00:00:00');
+  const diff = Math.round((expiry - todayMidnight()) / 86400000);
+  return diff;
+}
+
+function shelfFor(d){
+  if(d < 0) return 'expired';
+  if(d <= 3) return 'soon';
+  if(d <= 7) return 'week';
+  return 'fresh';
+}
+
+function stampLabel(d){
+  if(d < 0) return `${Math.abs(d)}d\nago`;
+  if(d === 0) return 'today';
+  if(d === 1) return '1 day';
+  return `${d}\ndays`;
+}
+
+async function load(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    items = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    items = [];
+  }
+  render();
+}
+
+async function save(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(items), false);
+  }catch(e){
+    showToast('Could not save — try again');
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(()=> t.classList.remove('show'), 1800);
+}
+
+function addItem(){
+  const name = document.getElementById('f-name').value.trim();
+  const category = document.getElementById('f-category').value;
+  const qty = document.getElementById('f-qty').value.trim() || '1';
+  const expiry = document.getElementById('f-expiry').value;
+
+  if(!name){ showToast('Give the item a name'); return; }
+  if(!expiry){ showToast('Pick an expiry date'); return; }
+
+  items.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    name, category, qty, expiry
+  });
+
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-qty').value = '';
+  document.getElementById('f-expiry').value = '';
+  document.getElementById('f-name').focus();
+
+  save();
+  render();
+  showToast(`Added ${name}`);
+}
+
+function markUsed(id){
+  const item = items.find(i => i.id === id);
+  items = items.filter(i => i.id !== id);
+  save();
+  render();
+  if(item) showToast(`Marked "${item.name}" as used`);
+}
+
+function deleteItem(id){
+  const item = items.find(i => i.id === id);
+  items = items.filter(i => i.id !== id);
+  save();
+  render();
+  if(item) showToast(`Removed "${item.name}"`);
+}
+
+function renderFilterBar(){
+  const bar = document.getElementById('filter-bar');
+  bar.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (cat === activeCategory ? ' active' : '');
+    b.textContent = cat;
+    b.onclick = () => { activeCategory = cat; render(); };
+    bar.appendChild(b);
+  });
+}
+
+function renderSummary(visible){
+  const counts = {expired:0, soon:0, week:0, fresh:0};
+  visible.forEach(i => counts[shelfFor(daysLeft(i.expiry))]++);
+  const el = document.getElementById('summary');
+  el.innerHTML = `
+    <span class="pill expired"><b>${counts.expired}</b> expired</span>
+    <span class="pill soon"><b>${counts.soon}</b> expiring soon</span>
+    <span class="pill fresh"><b>${counts.week + counts.fresh}</b> good for now</span>
+  `;
+}
+
+const SHELF_DEFS = [
+  {key:'expired', title:'Past due', empty:'Nothing expired — nice work.'},
+  {key:'soon', title:'Expiring soon (0–3 days)', empty:'Nothing urgent right now.'},
+  {key:'week', title:'This week (4–7 days)', empty:'Nothing due this week.'},
+  {key:'fresh', title:'Fresh (8+ days)', empty:'Nothing sitting out here yet.'}
+];
+
+function render(){
+  renderFilterBar();
+
+  const visible = activeCategory === 'All'
+    ? items
+    : items.filter(i => i.category === activeCategory);
+
+  renderSummary(visible);
+
+  const container = document.getElementById('shelves');
+  container.innerHTML = '';
+
+  if(items.length === 0){
+    container.innerHTML = `
+      <div class="empty">
+        <div class="big">The shelf is empty</div>
+        <div>Add your first grocery item above to start tracking it.</div>
+      </div>`;
+    return;
+  }
+
+  if(visible.length === 0){
+    container.innerHTML = `
+      <div class="empty">
+        <div class="big">Nothing in "${activeCategory}"</div>
+        <div>Try a different category, or add a new item.</div>
+      </div>`;
+    return;
+  }
+
+  const grouped = {expired:[], soon:[], week:[], fresh:[]};
+  visible.forEach(i => grouped[shelfFor(daysLeft(i.expiry))].push(i));
+  Object.values(grouped).forEach(list => list.sort((a,b)=> daysLeft(a.expiry) - daysLeft(b.expiry)));
+
+  SHELF_DEFS.forEach(def => {
+    const list = grouped[def.key];
+    const shelf = document.createElement('div');
+    shelf.className = `shelf ${def.key}`;
+
+    shelf.innerHTML = `
+      <div class="shelf-header">
+        <span class="shelf-title">${def.title}</span>
+        <span class="shelf-count">${list.length}</span>
+        <span class="shelf-line"></span>
+      </div>
+    `;
+
+    if(list.length === 0){
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'shelf-empty';
+      emptyMsg.textContent = def.empty;
+      shelf.appendChild(emptyMsg);
+    } else {
+      const itemsWrap = document.createElement('div');
+      itemsWrap.className = 'items';
+      list.forEach(i => itemsWrap.appendChild(renderItem(i, def.key)));
+      shelf.appendChild(itemsWrap);
+    }
+
+    container.appendChild(shelf);
+  });
+}
+
+function renderItem(i, shelfKey){
+  const d = daysLeft(i.expiry);
+  const el = document.createElement('div');
+  el.className = `item ${shelfKey}`;
+
+  const expiryDate = new Date(i.expiry + 'T00:00:00');
+  const dateStr = expiryDate.toLocaleDateString(undefined, {month:'short', day:'numeric'});
+
+  el.innerHTML = `
+    <div class="stamp">${stampLabel(d).replace('\n','<br>')}</div>
+    <div class="item-info">
+      <p class="item-name">${escapeHtml(i.name)}</p>
+      <div class="item-meta">
+        <span class="tag">${escapeHtml(i.category)}</span>
+        <span>qty ${escapeHtml(i.qty)}</span>
+        <span>· by ${dateStr}</span>
+      </div>
+    </div>
+    <div class="item-actions">
+      <button class="icon-btn used" title="Mark as used">✓</button>
+      <button class="icon-btn del" title="Remove">✕</button>
+    </div>
+  `;
+
+  el.querySelector('.used').onclick = () => markUsed(i.id);
+  el.querySelector('.del').onclick = () => deleteItem(i.id);
+
+  return el;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+document.getElementById('add-btn').addEventListener('click', addItem);
+document.getElementById('f-name').addEventListener('keydown', e => { if(e.key === 'Enter') addItem(); });
+document.getElementById('f-qty').addEventListener('keydown', e => { if(e.key === 'Enter') addItem(); });
+
+load();
+</script>
+</body>
+</html>
