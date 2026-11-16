@@ -15,7 +15,7 @@ Each item shows a stamped day-count badge, its category tag, quantity, and expir
 
 ## How data is stored
 
-Everything you add is saved automatically and privately - tied to your account, not shared with anyone else. There's no login or setup step; just open the file and start adding items.
+Everything you add is saved automatically in your own browser (localStorage), so it stays private to you and never leaves your device. There's no login or setup step; just open the file and start adding items. Clearing your site data removes the list.
 
 ## Running it
 
@@ -27,3 +27,7 @@ Open `best-by.html` in any modern browser. No install, no server, no dependencie
 - Reminder/notification digest
 - Barcode or receipt-based quick-add
 - Export to a shopping list
+
+## License
+
+Released under the [MIT License](LICENSE).

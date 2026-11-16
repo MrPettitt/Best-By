@@ -400,8 +400,10 @@ function stampLabel(d){
 
 async function load(){
   try{
-    const res = await window.storage.get(STORAGE_KEY, false);
-    items = res && res.value ? JSON.parse(res.value) : [];
+    const raw = window.storage
+      ? ((await window.storage.get(STORAGE_KEY, false)) || {}).value
+      : localStorage.getItem(STORAGE_KEY);
+    items = raw ? JSON.parse(raw) : [];
   }catch(e){
     items = [];
   }
@@ -410,7 +412,8 @@ async function load(){
 
 async function save(){
   try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(items), false);
+    if(window.storage) await window.storage.set(STORAGE_KEY, JSON.stringify(items), false);
+    else localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }catch(e){
     showToast('Could not save — try again');
   }
