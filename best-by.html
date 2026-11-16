@@ -415,7 +415,7 @@ async function save(){
     if(window.storage) await window.storage.set(STORAGE_KEY, JSON.stringify(items), false);
     else localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }catch(e){
-    showToast('Could not save — try again');
+    showToast('Could not save, try again');
   }
 }
 
@@ -491,7 +491,7 @@ function renderSummary(visible){
 }
 
 const SHELF_DEFS = [
-  {key:'expired', title:'Past due', empty:'Nothing expired — nice work.'},
+  {key:'expired', title:'Past due', empty:'Nothing expired, nice work.'},
   {key:'soon', title:'Expiring soon (0–3 days)', empty:'Nothing urgent right now.'},
   {key:'week', title:'This week (4–7 days)', empty:'Nothing due this week.'},
   {key:'fresh', title:'Fresh (8+ days)', empty:'Nothing sitting out here yet.'}
